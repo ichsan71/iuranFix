@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  *
  * @author DIANA
  */
-public class Siswa extends Sekolah{
+public class Siswa implements sqlInterface{
     private String NIM, namaSiswa, kelas, jurusan, semester, id_jurusan;
     String statusPembayaran;
     
@@ -32,23 +32,6 @@ public class Siswa extends Sekolah{
     ResultSet rs;
     Statement st;
 
-    /**
-     *
-     * @param namadb
-     * @return
-     */
-
-    public ResultSet selectDb(String namadb){
-        ResultSet rss = null;
-    try{
-        PreparedStatement stmt = con.prepareStatement("SELECT * FROM " + namadb);
-        rss = stmt.executeQuery();
-    } catch (SQLException e){
-        System.out.println("emng bau ini ma");
-    }
-    return rss;
-    } // cuekin under construction
-    
     public void cekInfoLogin(Siswa siswa, AkunPengguna akun, StatusPembayaran status, Tagihan tagihan, String nim, String nama, String pass){
         try {
                     ResultSet rs = akun.selectDb("akun");
@@ -123,25 +106,6 @@ public class Siswa extends Sekolah{
         }
     }
     
-    public void tampilDb(Siswa siswa, AkunPengguna akun){
-         try {
-            ResultSet rs = siswa.selectDb("mahasiswa");
-            
-            while(rs.next()){
-                if (rs.getString("nim").equals(akun.getNim())) {
-                    System.out.println("NIM      : " + rs.getString("nim"));
-                    System.out.println("Nama\t : " + rs.getString("nama"));
-                    System.out.println("Kelas\t : " + rs.getString("kelas"));
-                    System.out.println("Jurusan\t : " + rs.getString("jurusan"));
-                    System.out.println("Semester : " + rs.getInt("semester"));
-                }             
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(AkunPengguna.class.getName()).log(Level.SEVERE, null, ex);
-             System.out.println("gagal euy");
-        }
-    }
     public void bayar(Siswa siswa, StatusPembayaran status){
         if (siswa.getStatusPembayaran().equalsIgnoreCase("")) {
             status.insertDB(siswa.getNIM(), "DIBAYAR");
@@ -162,10 +126,10 @@ public class Siswa extends Sekolah{
         
     }
     
-    public void statusPembayaran(Siswa siswa, StatusPembayaran status){
+    public void statusPembayaran(Siswa siswa, AkunPengguna akun, StatusPembayaran status, Tagihan tagihan){
         System.out.println("\t==STATUS PEMBAYARAN==\n");
         
-        status.tampilDb(status, siswa);
+        status.tampilDb(siswa, akun, status, tagihan);
 
         for (int i = Integer.parseInt(siswa.semester)-1 ; i > 0; i--) {
             System.out.println("Semester " + i + " \t: " + "DIBAYAR");
@@ -173,6 +137,28 @@ public class Siswa extends Sekolah{
         
     }
 
+    @Override
+    public void tampilDb(Siswa siswa, AkunPengguna akun, StatusPembayaran status, Tagihan tagihan){
+         try {
+            ResultSet rs = siswa.selectDb("mahasiswa");
+            
+            while(rs.next()){
+                if (rs.getString("nim").equals(akun.getNim())) {
+                    System.out.println("NIM      : " + rs.getString("nim"));
+                    System.out.println("Nama\t : " + rs.getString("nama"));
+                    System.out.println("Kelas\t : " + rs.getString("kelas"));
+                    System.out.println("Jurusan\t : " + rs.getString("jurusan"));
+                    System.out.println("Semester : " + rs.getInt("semester"));
+                }             
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(AkunPengguna.class.getName()).log(Level.SEVERE, null, ex);
+             System.out.println("gagal euy tampil db di kelas siswa");
+        }
+    }
+    
+    @Override
     public void koneksi(){
         try {
             Class.forName(jdbcDriver);
@@ -190,6 +176,18 @@ public class Siswa extends Sekolah{
         
     }
 
+    @Override
+    public ResultSet selectDb(String namadb){
+        ResultSet rss = null;
+    try{
+        PreparedStatement stmt = con.prepareStatement("SELECT * FROM " + namadb);
+        rss = stmt.executeQuery();
+    } catch (SQLException e){
+        System.out.println("gagal select db di kelas siswa");
+    }
+    return rss;
+    } // cuekin under construction
+    
     /**
      * @return the NIM
      */
@@ -287,8 +285,5 @@ public class Siswa extends Sekolah{
     public void setStatusPembayaran(String statusPembayaran) {
         this.statusPembayaran = statusPembayaran;
     }
-    
-    
-    
     
 }

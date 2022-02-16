@@ -5,6 +5,7 @@
  */
 package iuranfix;
 import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.Statement;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,11 +16,18 @@ import java.util.logging.Logger;
  *
  * @author DIANA
  */
-public class Tagihan extends Siswa{
+public class Tagihan implements sqlInterface{
     private int hargaTotal;        
 
     String dbUrlTagihan = "jdbc:mysql://localhost/tagihandb";
-
+    String jdbcDriver = "com.mysql.jdbc.Driver";
+    String user = "root";
+    String pass = "";
+    
+    Connection con;
+    PreparedStatement pst;
+    ResultSet rs;
+    Statement st;
     
     @Override
     public ResultSet selectDb(String namadb){
@@ -33,13 +41,14 @@ public class Tagihan extends Siswa{
     return rss;
     } // cuekin under construction
     
-    public void tampilDb(Siswa siswa, AkunPengguna akun, Tagihan tagihan){
+    @Override
+    public void tampilDb(Siswa siswa, AkunPengguna akun, StatusPembayaran status, Tagihan tagihan){
          try {
             ResultSet rss = tagihan.selectDb("tagihan");
 
             while(rss.next()){
                 if (rss.getString("id_jurusan").equalsIgnoreCase(siswa.getId_jurusan()) && siswa.getStatusPembayaran().equalsIgnoreCase("")) {
-                    tagihan.setId_jurusan(rss.getString("id_jurusan"));
+                    siswa.setId_jurusan(rss.getString("id_jurusan"));
                     tagihan.setHargaTotal(rss.getInt("totalTagihan"));
 
                     System.out.println("Tagihan\t : " + rss.getString("totalTagihan"));
@@ -51,7 +60,7 @@ public class Tagihan extends Siswa{
 
         } catch (SQLException ex) {
             Logger.getLogger(AkunPengguna.class.getName()).log(Level.SEVERE, null, ex);
-             System.out.println("gagal euy");
+             System.out.println("gagal tampil di kelas tagihan");
         }
     }
         

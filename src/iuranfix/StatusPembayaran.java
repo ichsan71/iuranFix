@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  *
  * @author DIANA
  */
-public class StatusPembayaran {
+public class StatusPembayaran implements sqlInterface{
     String jdbcDriver = "com.mysql.jdbc.Driver";
     String dbUrl = "jdbc:mysql://localhost/statusPembayaran";
     String user = "root";
@@ -27,6 +27,7 @@ public class StatusPembayaran {
     ResultSet rs;
     Statement st;
     
+    @Override
     public ResultSet selectDb(String namadb){
         ResultSet rss = null;
         try{
@@ -38,7 +39,25 @@ public class StatusPembayaran {
         return rss;
     } // cuekin under construction
     
-    public void tampilDb(StatusPembayaran status, Siswa siswa){
+    @Override
+    public void koneksi(){
+        try {
+            Class.forName(jdbcDriver);
+            //System.out.println("kelas aman");
+        } catch (ClassNotFoundException ex) {
+            System.out.println("class error");
+        }
+        
+        try {
+            con = (Connection) DriverManager.getConnection(dbUrl, user, pass);
+            //System.out.println("Berhasil nyambung");
+        } catch (SQLException ex) {
+            System.out.println("koneksi error dari si status ");
+        }
+    }    
+    
+    @Override
+    public void tampilDb(Siswa siswa, AkunPengguna akun, StatusPembayaran status, Tagihan tagihan){
          try {
             ResultSet rss = status.selectDb("status");
 
@@ -70,19 +89,5 @@ public class StatusPembayaran {
         }
     }
     
-    public void koneksi(){
-        try {
-            Class.forName(jdbcDriver);
-            //System.out.println("kelas aman");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("class error");
-        }
-        
-        try {
-            con = (Connection) DriverManager.getConnection(dbUrl, user, pass);
-            //System.out.println("Berhasil nyambung");
-        } catch (SQLException ex) {
-            System.out.println("koneksi error dari si status ");
-        }
-    }    
+
 }

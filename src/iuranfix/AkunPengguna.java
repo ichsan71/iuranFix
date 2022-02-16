@@ -5,6 +5,7 @@
  */
 package iuranfix;
 import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.Statement;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,8 +17,16 @@ import java.util.logging.Logger;
  *
  * @author DIANA
  */
-public class AkunPengguna extends Siswa{
-private String username, password, nim;
+public class AkunPengguna implements sqlInterface{
+    private String username, password, nim;
+    private Connection con;
+    private PreparedStatement pst;
+    private ResultSet rs;
+    private Statement st;
+    
+    String jdbcDriver = "com.mysql.jdbc.Driver";
+    String user = "root";
+    String pass = "";
     
     String dbUrlAkun = "jdbc:mysql://localhost/akundb";
     
@@ -40,11 +49,10 @@ private String username, password, nim;
             System.out.print("Masukan pilihan : ");
             pil = scanner.next();
             
-
             switch(pil){
                 case "1":
-                    siswas.tampilDb(siswas, akun); // ini method tampil data siswa dari kelas siswa
-                    akun.tampilAkun(akun); // ini method tampil data akun dari kelas akunPengguna
+                    siswas.tampilDb(siswas, akun, status, tagihan); // ini method tampil data siswa dari kelas siswa
+                    akun.tampilDb(siswas, akun, status, tagihan); // ini method tampil data akun dari kelas akunPengguna
                     Main.delay(); // ini untuk delay loading
                     Main.cls(); // ini untuk bersihin layar
                     break;
@@ -68,8 +76,8 @@ private String username, password, nim;
                     break;
                 case "4":
                     System.out.println("\t========INFO TAGIHAN========");
-                    siswas.tampilDb(siswas, akun); // ini method tampil data siswa dari kelas siswa
-                    tagihan.tampilDb(siswas, akun, tagihan); // ini method tampil data tagihan dari kelas tagihan
+                    siswas.tampilDb(siswas, akun, status, tagihan); // ini method tampil data siswa dari kelas siswa
+                    tagihan.tampilDb(siswas, akun, status, tagihan); // ini method tampil data tagihan dari kelas tagihan
                     
                     System.out.print("Apakah kamu yakin untuk membayar Tagihan [Y/T] ? ");
                     String pay = scanner.next(); // input user
@@ -81,7 +89,7 @@ private String username, password, nim;
                     Main.cls(); // ini untuk bersihin layar
                     break;
                 case "5":
-                    siswas.statusPembayaran(siswas, status); // ini method tampil status pembayaran dari kelas Status
+                    siswas.statusPembayaran(siswas, akun, status, tagihan); // ini method tampil status pembayaran dari kelas Status
                     Main.delay(); // ini untuk delay loading
                     Main.cls(); // ini untuk bersihin layar
                     break;           
@@ -159,6 +167,8 @@ private String username, password, nim;
         }
     }
     
+    
+    
     @Override
     public ResultSet selectDb(String namaDb){
         ResultSet rss = null;
@@ -166,12 +176,13 @@ private String username, password, nim;
         PreparedStatement stmt = con.prepareStatement("SELECT * FROM " + namaDb);
         rss = stmt.executeQuery();
     } catch (SQLException e){
-        System.out.println("emng bau ini ma");
+        System.out.println("error select db akun pengguna");
     }
     return rss;
     } // cuekin under construction
     
-    public void tampilAkun(AkunPengguna akun){
+    @Override
+    public void tampilDb(Siswa siswa, AkunPengguna akun, StatusPembayaran status, Tagihan tagihan){
         try {
             ResultSet rs = akun.selectDb("akun");
             
@@ -184,7 +195,7 @@ private String username, password, nim;
             }
 
         } catch (SQLException ex) {
-            System.out.println("gagal manggil aing si tampil akun");
+            System.out.println("gagal manggil si tampil akun");
         }
 
     }
@@ -246,8 +257,5 @@ private String username, password, nim;
      */
     public void setNim(String nim) {
         this.nim = nim;
-    }
-
-    
-        
+    }       
 }

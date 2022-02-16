@@ -5,8 +5,6 @@
  */
 package iuranfix;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Scanner;
 /**
  *
@@ -18,9 +16,6 @@ public class Main {
         Siswa siswas = new Siswa();
         Tagihan tagihan = new Tagihan();
         StatusPembayaran status = new StatusPembayaran();
-        Sekolah sekolah1 = new Sekolah();
-        sekolah1.setNPS("123");
-        sekolah1.setNamaSekolah("UNIVERSITAS TEAM 7");
         
         String pil;
         do {            
